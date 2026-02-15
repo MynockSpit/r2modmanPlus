@@ -34,7 +34,7 @@ async function removeProfile() {
     <ModalCard id="delete-profile-modal" v-if="isOpen" :is-active="isOpen" @close-modal="closeDeleteProfileModal">
 
         <template v-slot:header>
-            <h2 class="modal-title">Delete profile</h2>
+            <h2 class="modal-title">Delete profile <i>{{ store.getters['profile/activeProfileName'] }}</i></h2>
         </template>
         <template v-slot:body>
             <p>This will remove all mods, and their config files, installed within this profile.</p>

@@ -5,11 +5,7 @@
     <ImportProfileModal />
     <!-- Content -->
     <div id="profile-body">
-        <hero
-            title="Profile selection"
-            subtitle="Profiles help to organise mods easily"
-            heroType="primary"
-        />
+        <hero title="Profile selection" subtitle="Profiles help to organise mods easily" heroType="primary" />
         <div class='notification'>
             <div class="container">
                 <i class='fas fa-long-arrow-alt-left margin-right' />
@@ -19,30 +15,31 @@
         <div id="profile-list" class="margin-top">
             <div class="container" id="profile-list-content">
                 <div v-for="(profileName) of profileList" :key="profileName">
-                    <a @click="setSelectedProfile(profileName, false)">
-                        <div class="border-at-bottom">
-                            <div class="">
-                                <p
-                                    :class="['card-header-title', {'has-text-info':activeProfileName === profileName}]"
-                                >{{ profileName }}</p>
+                    <div class="border-at-bottom" style="margin-top: 10px;">
+                        <div class="" style="display: flex; justify-content: space-between;">
+                            <p :class="['card-header-title']">
+                                <a @click="moveToNextScreen(profileName)">{{ profileName }}</a>
+                            </p>
+                            <div style="display: flex; justify-content: space-between; gap: 10px; margin-right: 10px;">
+                                <button class="button" @click="openRenameProfileModal(profileName)"
+                                    :disabled="profileName === 'Default'">
+                                    Rename
+                                </button>
+                                <button class="button is-danger"
+                                    @click="openDeleteProfileModal(profileName)">Delete</button>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 </div>
             </div>
         </div>
         <div id="profile-actions">
             <div class="container" id="profile-actions-container">
                 <div id="profile-actions-row">
-                    <button class="button is-info" @click="moveToNextScreen()">Select profile</button>
-                    <button class="button" @click="openRenameProfileModal()" :disabled="activeProfileName === 'Default'">
-                        Rename
-                    </button>
                     <button class="button" @click="openCreateProfileModal()">
                         Create new
                     </button>
                     <button class="button" @click="openImportProfileModal()">Import / Update</button>
-                    <button class="button is-danger" @click="openDeleteProfileModal()">Delete</button>
                 </div>
             </div>
         </div>
@@ -72,11 +69,19 @@ function openCreateProfileModal() {
     store.commit('openCreateProfileModal');
 }
 
-function openDeleteProfileModal() {
+async function openDeleteProfileModal(profileName?: string) {
+    if (profileName) {
+        await setSelectedProfile(profileName, false)
+    }
+
     store.commit('openDeleteProfileModal');
 }
 
-function openRenameProfileModal() {
+async function openRenameProfileModal(profileName?: string) {
+    if (profileName) {
+        await setSelectedProfile(profileName, false)
+    }
+
     store.commit('openRenameProfileModal');
 }
 
@@ -84,9 +89,13 @@ function openImportProfileModal() {
     store.commit('openImportProfileModal');
 }
 
-async function moveToNextScreen() {
-    await setSelectedProfile(activeProfileName.value, true);
-    await router.push({name: 'manager.installed'});
+async function moveToNextScreen(profileName?: string) {
+    if (profileName) {
+        await setSelectedProfile(profileName, false)
+    } else {
+        await setSelectedProfile(activeProfileName.value, true);
+    }
+    await router.push({ name: 'manager.installed' });
 }
 
 async function setSelectedProfile(profileName: string, prewarmCache: boolean) {
@@ -109,10 +118,10 @@ async function updateProfileList() {
 
 async function backToGameSelection() {
     await ManagerSettings.resetDefaults();
-    await router.push({name: "index"});
+    await router.push({ name: "index" });
 }
 
-onMounted( async () => {
+onMounted(async () => {
     console.debug("Profiles view entered with active game", store.state.activeGame.settingsIdentifier);
 
     const settings = await store.getters.settings;
