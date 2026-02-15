@@ -3,13 +3,19 @@
         <div class="sticky-top sticky-top--no-shadow sticky-top--no-padding">
             <aside class="menu">
                 <div>
+                    <ul class="menu-list">
+                        <li style="margin-bottom: 5px;">
+                            <a @click="backToGameSelection()"><i class='fas fa-long-arrow-alt-left margin-right' />Back to
+                                game selection</a>
+                        </li>
+                    </ul>
                     <p class="menu-label">{{ activeGame.displayName }}</p>
                     <ul class="menu-list">
-                        <li>
-                            <a href="#" @click="launchGame(LaunchMode.MODDED)"><i class="fas fa-play-circle icon--margin-right"/>Start modded</a>
+                        <li style="margin-bottom: 5px;">
+                            <a href="#" class="button is-info" style="display: flex;" @click="launchGame(LaunchMode.MODDED)"><i class="fas fa-play-circle icon--margin-right" />Start modded</a>
                         </li>
                         <li>
-                            <a href="#" @click="launchGame(LaunchMode.VANILLA)"><i class="far fa-play-circle icon--margin-right"/>Start vanilla</a>
+                            <a href="#" class="button is-info" style="display: flex;" @click="launchGame(LaunchMode.VANILLA)"><i class="far fa-play-circle icon--margin-right" />Start vanilla</a>
                         </li>
                     </ul>
                     <p class="menu-label">Mods</p>
@@ -89,8 +95,9 @@ import FileUtils from '../../utils/FileUtils';
 import { ref, computed, onMounted, getCurrentInstance } from 'vue';
 import { getStore } from '../../providers/generic/store/StoreProvider';
 import { State } from '../../store';
-import VueRouter, { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import ProtocolProvider from '../../providers/generic/protocol/ProtocolProvider';
+import ManagerSettings from '../../r2mm/manager/ManagerSettings';
 
 const store = getStore<State>();
 const router = useRouter();
@@ -129,6 +136,11 @@ async function launchGame(mode: LaunchMode) {
         store.commit("closeGameRunningModal");
         store.commit("error/handleError", R2Error.fromThrownValue(error));
     }
+}
+
+async function backToGameSelection() {
+    await ManagerSettings.resetDefaults();
+    await router.push({ name: "index" });
 }
 
 </script>
